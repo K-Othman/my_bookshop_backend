@@ -14,7 +14,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Posting a new book
+// POSTING A NEW BOOK
 
 router.post("/", async (req, res) => {
   try {
@@ -34,6 +34,7 @@ router.post("/", async (req, res) => {
   }
 });
 
+// DELETING A BOOK
 router.delete("/:id", async (req, res) => {
   try {
     const id = req.params.id;
@@ -50,6 +51,25 @@ router.delete("/:id", async (req, res) => {
     res.json({ message: "Book deleted successfully" });
   } catch (error) {
     res.status(500).json({ error: "Faild to delete the book" });
+  }
+});
+
+// FILTERING THE BOOKS DEPENDING ON THEIR CATEGORY
+router.get("/category/:category_id", async (req, res) => {
+  const { category_id } = req.params;
+  try {
+    const result = await pool.query(
+      "SELECT * FROM books WHERE category_id = $1",
+      [category_id]
+    );
+    if (result.rowCount === 0) {
+      return res
+        .status(404)
+        .json({ message: "No books found for this category" });
+    }
+    res.json(result.rows[0]);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch books by category" });
   }
 });
 
