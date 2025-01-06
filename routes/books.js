@@ -25,7 +25,6 @@ router.post("/", async (req, res) => {
       "INSERT INTO books (title, author, price, published_date, category_id,image) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;",
       [title, author, price, published_date, category_id, image]
     );
-    // const values = [title , author, price, published_date, category_id,image]
     console.log(result.rows);
 
     res.status(201).json(result.rows[0]);
