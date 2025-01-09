@@ -6,11 +6,25 @@ const pool = require("../config/db.js");
 router.get("/", async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM books");
-    console.log(result.rows);
-
     res.json(result.rows);
   } catch (error) {
     res.status(500).json({ error: "Faild to fetch books" });
+  }
+});
+
+// Getting book with ID
+
+router.get("/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query("SELECT * FROM books WHERE id = $1", [id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Book not found" });
+    }
+
+    res.json(result.rows[0]);
+  } catch (error) {
+    res.status(500).json({ error: "Faild to fetch a book" });
   }
 });
 
@@ -25,6 +39,7 @@ router.post("/", async (req, res) => {
       "INSERT INTO books (title, author, price, published_date, category_id,image) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;",
       [title, author, price, published_date, category_id, image]
     );
+    cosmos;
     console.log(result.rows);
 
     res.status(201).json(result.rows[0]);
