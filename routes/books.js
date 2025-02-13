@@ -86,5 +86,28 @@ router.get("/category/:category_id", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch books by category" });
   }
 });
+// ADD A WISH LIST
+router.post("/wishlist", async (req, res) => {
+  const { user_id, book_id } = req.body;
+
+  if (!user_id || !book_id) {
+    return res
+      .status(400)
+      .json({ message: "User Id and Book Id are required" });
+  }
+  try {
+    const result = await pool.query(
+      "INSERT INTO wishlist (user_id, book_id) VALUES ($1, $2) RETURNING *"[
+        (user_id, book_id)
+      ]
+    );
+    res
+      .status(201)
+      .json({ message: "Book added to wishlist", data: result.rows[0] });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to add book to wishlist" });
+  }
+});
 
 module.exports = router;
+//       "SELECT books.* FROM wishlist JOIN books ON wishlist.book_id = book_id WHERE wishlist.user_id = $1",
